@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gia Phả Số</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#8B1A1A;--red-light:#B22222;--red-dark:#5C0E0E;
+  --gold:#C8960C;--gold-light:#E8B420;--gold-pale:#FFF8E7;
+  --cream:#FDF6EE;--cream2:#F5EDD8;
+  --text:#2C1810;--text2:#5C3A1E;--text3:#8B6914;
+  --border:#D4A843;--border-light:#EED98B;
+  --white:#FFFFFF;
+  --shadow:0 2px 12px rgba(139,26,26,0.12);
+  --shadow-lg:0 8px 32px rgba(139,26,26,0.18);
+}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+/* HEADER */
+.app-header{background:var(--red);color:white;padding:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;max-width:1200px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:20px;font-weight:700;letter-spacing:0.5px}
+.logo-sub{font-size:11px;opacity:0.8;font-weight:400}
+.header-btn{background:var(--gold);color:var(--red-dark);border:none;padding:8px 16px;border-radius:20px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.header-btn:hover{background:var(--gold-light)}
+
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border-light);display:flex;z-index:100;box-shadow:0 -2px 12px rgba(0,0,0,0.1)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;font-family:inherit;color:#888;font-size:11px;gap:4px;transition:color 0.2s}
+.nav-item.active{color:var(--red)}
+.nav-icon{font-size:22px;line-height:1}
+
+/* MAIN */
+.main{max-width:1200px;margin:0 auto;padding:16px 16px 80px}
+
+/* TABS */
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* TREE */
+.tree-wrap{overflow:auto;padding:20px 0}
+.tree-container{min-width:600px}
+.tree-level{display:flex;justify-content:center;gap:0;margin-bottom:0;position:relative}
+.member-col{display:flex;flex-direction:column;align-items:center;position:relative}
+.couple-group{display:flex;align-items:flex-end;gap:4px;position:relative}
+.couple-group::after{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);width:2px;height:20px;background:var(--border)}
+.member-card{background:white;border:1.5px solid var(--border-light);border-radius:12px;padding:10px;text-align:center;width:90px;cursor:pointer;transition:all 0.2s;position:relative}
+.member-card:hover{border-color:var(--gold);box-shadow:var(--shadow)}
+.member-card.deceased{opacity:0.7}
+.member-card.root{border-color:var(--gold);background:var(--gold-pale)}
+.member-avatar{width:48px;height:48px;border-radius:50%;background:var(--cream2);margin:0 auto 6px;overflow:hidden;border:2px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:20px}
+.member-avatar img{width:100%;height:100%;object-fit:cover}
+.member-name{font-size:11px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px}
+.member-year{font-size:10px;color:var(--text3)}
+.member-rel{font-size:10px;color:var(--red);font-weight:500;margin-top:2px;background:rgba(139,26,26,0.08);border-radius:4px;padding:1px 4px}
+.couple-line{width:24px;height:2px;background:var(--red);align-self:center;margin-bottom:34px}
+
+/* Children connector */
+.children-connector{display:flex;flex-direction:column;align-items:center}
+.v-line{width:2px;height:20px;background:var(--border);margin:0 auto}
+.h-line-wrap{display:flex;justify-content:center}
+.h-line{height:2px;background:var(--border)}
+.children-row{display:flex;gap:12px;justify-content:center}
+.child-connector{display:flex;flex-direction:column;align-items:center}
+.child-v-line{width:2px;height:16px;background:var(--border)}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:white;border-radius:12px;padding:14px;text-align:center;border:1px solid var(--border-light)}
+.stat-num{font-size:28px;font-weight:700;color:var(--red)}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* SECTION */
+.section-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--red-dark);margin-bottom:14px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border-light)}
+
+/* EVENTS */
+.event-card{background:white;border-radius:12px;padding:14px;border-left:4px solid var(--red);margin-bottom:10px;box-shadow:var(--shadow)}
+.event-date{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:4px}
+.event-name{font-size:14px;font-weight:600;color:var(--text)}
+.event-type{font-size:11px;background:rgba(139,26,26,0.1);color:var(--red);padding:2px 8px;border-radius:10px;display:inline-block;margin-top:4px}
+.upcoming-badge{background:var(--gold);color:var(--red-dark);font-size:10px;padding:2px 8px;border-radius:10px;float:right}
+
+/* MEMBERS LIST */
+.member-list-item{background:white;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer}
+.member-list-item:hover{border:1px solid var(--border-light)}
+.member-list-avatar{width:52px;height:52px;border-radius:50%;background:var(--cream2);overflow:hidden;flex-shrink:0;border:2px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:24px}
+.member-list-avatar img{width:100%;height:100%;object-fit:cover}
+.member-list-info{flex:1}
+.member-list-name{font-size:15px;font-weight:600;color:var(--text)}
+.member-list-detail{font-size:12px;color:var(--text2);margin-top:2px}
+.member-list-phone{font-size:12px;color:var(--red);margin-top:3px;display:flex;align-items:center;gap:4px}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(44,24,16,0.55);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:white;border-radius:24px 24px 0 0;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:24px 20px 32px}
+.modal-handle{width:40px;height:4px;background:var(--border-light);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-size:18px;font-weight:700;color:var(--red-dark);margin-bottom:20px;text-align:center}
+.form-group{margin-bottom:14px}
+.form-label{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block}
+.form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border-light);border-radius:10px;font-family:inherit;font-size:14px;color:var(--text);outline:none;background:var(--cream)}
+.form-input:focus{border-color:var(--gold)}
+.form-select{width:100%;padding:10px 14px;border:1.5px solid var(--border-light);border-radius:10px;font-family:inherit;font-size:14px;color:var(--text);background:var(--cream);outline:none}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.avatar-upload{text-align:center;margin-bottom:16px}
+.avatar-preview{width:80px;height:80px;border-radius:50%;background:var(--cream2);margin:0 auto 10px;overflow:hidden;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer}
+.avatar-preview img{width:100%;height:100%;object-fit:cover}
+.upload-hint{font-size:12px;color:var(--text3)}
+.btn-primary{width:100%;background:var(--red);color:white;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px}
+.btn-primary:hover{background:var(--red-light)}
+.btn-secondary{width:100%;background:var(--cream2);color:var(--text2);border:1px solid var(--border-light);padding:12px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-top:8px}
+.btn-danger{background:#fee;color:#c00;border:1px solid #fcc;padding:10px;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;margin-top:8px;width:100%}
+
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-month{font-size:16px;font-weight:700;color:var(--text)}
+.cal-nav{background:none;border:1px solid var(--border-light);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--text2)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.cal-day-name{font-size:11px;font-weight:600;color:var(--text3);padding:6px 0}
+.cal-day{font-size:13px;padding:8px 4px;border-radius:8px;cursor:pointer;position:relative;color:var(--text)}
+.cal-day.today{background:var(--red);color:white;font-weight:700}
+.cal-day.has-event::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold)}
+.cal-day.today.has-event::after{background:white}
+.cal-day:hover:not(.today){background:var(--cream2)}
+.cal-day.other-month{color:#ccc}
+
+/* LUNAR HEADER */
+.lunar-header{background:var(--red);color:white;border-radius:16px;padding:16px;margin-bottom:20px;text-align:center}
+.lunar-time{font-size:28px;font-weight:700;margin-bottom:4px}
+.lunar-date{font-size:13px;opacity:0.9}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:14px}
+
+/* ADD FAB */
+.fab{position:fixed;bottom:76px;right:20px;background:var(--red);color:white;border:none;width:52px;height:52px;border-radius:50%;font-size:24px;cursor:pointer;box-shadow:var(--shadow-lg);z-index:99}
+
+/* COMMUNITY */
+.community-banner{background:linear-gradient(135deg,var(--red-dark),var(--red));border-radius:16px;padding:20px;color:white;margin-bottom:20px;position:relative;overflow:hidden}
+.community-banner h2{font-size:20px;font-weight:700;margin-bottom:4px}
+.community-banner p{font-size:13px;opacity:0.85}
+.comm-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.comm-stat{background:white;border-radius:12px;padding:14px;text-align:center}
+.comm-num{font-size:24px;font-weight:700;color:var(--red)}
+.comm-label{font-size:12px;color:var(--text2)}
+.support-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.support-item{background:white;border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;cursor:pointer;box-shadow:var(--shadow);font-size:13px;color:var(--text2);font-weight:500}
+.support-icon{font-size:28px}
+
+/* DETAIL */
+.detail-header{background:var(--red);color:white;border-radius:16px;padding:20px;text-align:center;margin-bottom:20px}
+.detail-avatar{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.2);margin:0 auto 12px;overflow:hidden;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:36px}
+.detail-avatar img{width:100%;height:100%;object-fit:cover}
+.detail-name{font-size:20px;font-weight:700;margin-bottom:4px}
+.detail-rel{font-size:13px;opacity:0.85}
+.info-card{background:white;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--cream2);font-size:14px}
+.info-row:last-child{border-bottom:none}
+.info-key{color:var(--text3);font-size:13px}
+.info-val{color:var(--text);font-weight:500;text-align:right}
+.phone-link{color:var(--red);font-weight:600}
+
+/* ACCOUNT */
+.account-section{background:white;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.account-header{text-align:center;padding-bottom:20px;border-bottom:1px solid var(--cream2);margin-bottom:16px}
+.account-avatar{width:80px;height:80px;border-radius:50%;background:var(--cream2);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid var(--border)}
+.account-name{font-size:18px;font-weight:700;color:var(--text)}
+.account-phone{font-size:13px;color:var(--text3)}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--cream2);cursor:pointer;font-size:14px;color:var(--text)}
+.menu-item:last-child{border-bottom:none}
+.menu-icon{font-size:20px;margin-right:10px;color:var(--red)}
+
+/* NOTIFICATION */
+.notif{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--red);color:white;padding:10px 20px;border-radius:20px;font-size:13px;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.notif.show{opacity:1}
+
+/* Search */
+.search-bar{display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:10px 14px;margin-bottom:16px;box-shadow:var(--shadow)}
+.search-bar input{flex:1;border:none;outline:none;font-family:inherit;font-size:14px;background:none;color:var(--text)}
+.search-bar span{font-size:18px;color:var(--text3)}
+
+/* Deceased indicator */
+.deceased-tag{font-size:10px;background:#555;color:white;padding:1px 6px;border-radius:6px;margin-left:4px}
+
+/* Generation label */
+.gen-label{font-size:11px;color:var(--text3);background:var(--cream2);padding:3px 10px;border-radius:10px;margin-bottom:8px;font-weight:500}
+
+.back-btn{display:flex;align-items:center;gap:8px;background:none;border:none;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🌳</div>
+      <div>
+        <div class="logo-text">Gia Phả Số</div>
+        <div class="logo-sub">Kết nối tinh thân - Giữ gìn nguồn cội</div>
+      </div>
+    </div>
+    <button class="header-btn" onclick="openAddMember()">＋ Thêm thành viên</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="main">
+  <!-- GIA PHẢ -->
+  <div class="tab-panel active" id="tab-tree">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-members">0</div><div class="stat-label">Thành viên</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-gen">0</div><div class="stat-label">Thế hệ</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-events">0</div><div class="stat-label">Sự kiện</div></div>
+    </div>
+    <div class="section-title">Cây Gia Phả</div>
+    <div class="tree-wrap" id="tree-root"></div>
+  </div>
+
+  <!-- SỰ KIỆN -->
+  <div class="tab-panel" id="tab-events">
+    <div class="lunar-header">
+      <div class="lunar-time" id="cur-time">00:00</div>
+      <div class="lunar-date" id="cur-date-vi">--</div>
+    </div>
+    <div class="cal-header">
+      <button class="cal-nav" onclick="prevMonth()">‹</button>
+      <div class="cal-month" id="cal-month-label"></div>
+      <button class="cal-nav" onclick="nextMonth()">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div style="margin-top:20px">
+      <div class="section-title">Sự kiện hôm nay</div>
+      <div id="events-today"></div>
+      <div class="section-title" style="margin-top:20px">30 ngày tới</div>
+      <div id="events-upcoming"></div>
+    </div>
+  </div>
+
+  <!-- THÀNH VIÊN -->
+  <div class="tab-panel" id="tab-members">
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" id="member-search" placeholder="Tìm kiếm thành viên..." oninput="renderMemberList()">
+    </div>
+    <div id="member-list"></div>
+  </div>
+
+  <!-- CỘNG ĐỒNG -->
+  <div class="tab-panel" id="tab-community">
+    <div class="community-banner">
+      <h2>Cộng Đồng Gia Đình Số 🇻🇳</h2>
+      <p>Gìn giữ văn hoá truyền thống theo phong cách hiện đại</p>
+    </div>
+    <div class="comm-stats">
+      <div class="comm-stat"><div class="comm-num">66,469</div><div class="comm-label">Thành viên</div></div>
+      <div class="comm-stat"><div class="comm-num">23,955</div><div class="comm-label">Gia phả</div></div>
+    </div>
+    <div class="section-title">Trợ giúp</div>
+    <div class="support-grid">
+      <div class="support-item"><div class="support-icon">📖</div>Hướng dẫn sử dụng</div>
+      <div class="support-item"><div class="support-icon">💬</div>Zalo: Gia Phả Số</div>
+      <div class="support-item"><div class="support-icon">🔒</div>Chính sách tài khoản</div>
+      <div class="support-item"><div class="support-icon">▶️</div>Youtube Gia Phả Số</div>
+    </div>
+    <div class="support-grid" style="grid-template-columns:1fr">
+      <div class="support-item" style="flex-direction:row;justify-content:center"><div class="support-icon">🎵</div>TikTok Gia Phả Số</div>
+    </div>
+  </div>
+
+  <!-- TÀI KHOẢN -->
+  <div class="tab-panel" id="tab-account">
+    <div class="account-section">
+      <div class="account-header">
+        <div class="account-avatar">👤</div>
+        <div class="account-name">Khách</div>
+        <div class="account-phone">Chưa đăng nhập</div>
+      </div>
+      <div class="menu-item"><span><span class="menu-icon">📊</span>Dữ liệu gia phả</span><span>›</span></div>
+      <div class="menu-item"><span><span class="menu-icon">☁️</span>Sao lưu / Khôi phục</span><span>›</span></div>
+      <div class="menu-item"><span><span class="menu-icon">📤</span>Xuất PDF</span><span>›</span></div>
+      <div class="menu-item"><span><span class="menu-icon">🔒</span>Bảo mật thông tin</span><span>›</span></div>
+      <div class="menu-item" onclick="clearAll()" style="color:#c00"><span><span class="menu-icon">🗑️</span>Xoá tất cả dữ liệu</span><span>›</span></div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--text3);padding:10px">Gia Phả Số v1.0 · Bảo mật thông tin gia đình bạn</div>
+  </div>
+
+  <!-- MEMBER DETAIL -->
+  <div class="tab-panel" id="tab-detail">
+    <button class="back-btn" onclick="goBack()">← Quay lại</button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="switchTab('tree',this)">
+    <div class="nav-icon">🌳</div>Gia phả
+  </button>
+  <button class="nav-item" onclick="switchTab('events',this)">
+    <div class="nav-icon">📅</div>Sự kiện
+  </button>
+  <button class="nav-item" onclick="switchTab('members',this)">
+    <div class="nav-icon">👥</div>Thành viên
+  </button>
+  <button class="nav-item" onclick="switchTab('community',this)">
+    <div class="nav-icon">🏘️</div>Cộng đồng
+  </button>
+  <button class="nav-item" onclick="switchTab('account',this)">
+    <div class="nav-icon">👤</div>Tài khoản
+  </button>
+</nav>
+
+<!-- FAB -->
+<button class="fab" onclick="openAddEvent()" id="fab-btn" title="Thêm sự kiện">＋</button>
+
+<!-- ADD MEMBER MODAL -->
+<div class="modal-bg" id="modal-member">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ Thêm Thành Viên</div>
+    <div class="avatar-upload">
+      <div class="avatar-preview" id="avatar-preview" onclick="document.getElementById('avatar-file').click()">👤</div>
+      <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+      <div class="upload-hint">Nhấn để chọn ảnh đại diện</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Họ và tên *</label>
+      <input class="form-input" id="m-name" placeholder="Nguyễn Văn A">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Năm sinh</label>
+        <input class="form-input" id="m-birth" placeholder="1950" type="number">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Năm mất</label>
+        <input class="form-input" id="m-death" placeholder="(nếu có)" type="number">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Giới tính</label>
+      <select class="form-select" id="m-gender">
+        <option value="male">Nam</option>
+        <option value="female">Nữ</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Số điện thoại</label>
+      <input class="form-input" id="m-phone" placeholder="0912345678" type="tel">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Quan hệ với người đã chọn</label>
+      <select class="form-select" id="m-relation">
+        <option value="root">Tổ tiên / Gốc gia phả</option>
+        <option value="spouse">Vợ / Chồng</option>
+        <option value="child">Con</option>
+        <option value="parent">Cha / Mẹ</option>
+        <option value="sibling">Anh / Chị / Em</option>
+      </select>
+    </div>
+    <div class="form-group" id="m-parent-group">
+      <label class="form-label">Con của (chọn cha hoặc mẹ)</label>
+      <select class="form-select" id="m-parent"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nghề nghiệp</label>
+      <input class="form-input" id="m-job" placeholder="Nông dân, Giáo viên...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Quê quán</label>
+      <input class="form-input" id="m-hometown" placeholder="Xã, huyện, tỉnh...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ngày giỗ (nếu đã mất)</label>
+      <input class="form-input" id="m-anniversary" placeholder="VD: 15/7 âm lịch">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ghi chú</label>
+      <textarea class="form-input" id="m-note" rows="3" placeholder="Tiểu sử, đóng góp..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="saveMember()">💾 Lưu thành viên</button>
+    <button class="btn-secondary" onclick="closeModal('modal-member')">Huỷ</button>
+  </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div class="modal-bg" id="modal-event">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📅 Thêm Sự Kiện</div>
+    <div class="form-group">
+      <label class="form-label">Tên sự kiện *</label>
+      <input class="form-input" id="e-name" placeholder="Giỗ ông nội, Sinh nhật...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Loại sự kiện</label>
+      <select class="form-select" id="e-type">
+        <option value="anniversary">Ngày giỗ</option>
+        <option value="birthday">Sinh nhật</option>
+        <option value="wedding">Cưới hỏi</option>
+        <option value="gathering">Họp họ</option>
+        <option value="other">Khác</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Ngày (dương)</label>
+        <input class="form-input" id="e-date" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hàng năm?</label>
+        <select class="form-select" id="e-recurring">
+          <option value="yes">Có (lặp lại)</option>
+          <option value="no">Không</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Âm lịch (ghi chú)</label>
+      <input class="form-input" id="e-lunar" placeholder="VD: 15 tháng 7 Âm lịch">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Thành viên liên quan</label>
+      <select class="form-select" id="e-member"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ghi chú</label>
+      <textarea class="form-input" id="e-note" rows="2" placeholder="Địa điểm, hướng dẫn..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="saveEvent()">💾 Lưu sự kiện</button>
+    <button class="btn-secondary" onclick="closeModal('modal-event')">Huỷ</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ==================== DATA ====================
+const STORAGE_KEY = 'giaPha_v1';
+let db = { members:[], events:[] };
+let prevTab = 'tree';
+let selectedMemberAvatar = '';
+let editingMemberId = null;
+
+function loadDB(){ try{ const s=localStorage.getItem(STORAGE_KEY); if(s) db=JSON.parse(s); } catch(e){} }
+function saveDB(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(db)); }
+
+loadDB();
+if(db.members.length===0){
+  // Sample data
+  const id1=uid(); const id2=uid(); const id3=uid(); const id4=uid();
+  const id5=uid(); const id6=uid(); const id7=uid(); const id8=uid();
+  db.members=[
+    {id:id1,name:'Nguyễn Văn Tổ',birth:1920,death:1988,gender:'male',relation:'root',parentId:null,spouseId:id2,phone:'',job:'Nông dân',hometown:'Thái Bình',anniversary:'15/7 âm lịch',note:'Người sáng lập gia tộc',avatar:''},
+    {id:id2,name:'Lê Thị Mão',birth:1925,death:1995,gender:'female',relation:'spouse',parentId:null,spouseId:id1,phone:'',job:'Nội trợ',hometown:'Thái Bình',anniversary:'3/3 âm lịch',note:'',avatar:''},
+    {id:id3,name:'Nguyễn Văn An',birth:1950,death:null,gender:'male',relation:'child',parentId:id1,spouseId:id4,phone:'0912345678',job:'Giáo viên',hometown:'Hà Nội',anniversary:'',note:'',avatar:''},
+    {id:id4,name:'Trần Thị Bình',birth:1955,death:null,gender:'female',relation:'spouse',parentId:null,spouseId:id3,phone:'0987654321',job:'Bác sĩ',hometown:'Nam Định',anniversary:'',note:'',avatar:''},
+    {id:id5,name:'Nguyễn Thị Lan',birth:1948,death:null,gender:'female',relation:'child',parentId:id1,spouseId:null,phone:'0934567890',job:'Kế toán',hometown:'Hà Nội',anniversary:'',note:'',avatar:''},
+    {id:id6,name:'Nguyễn Văn Minh',birth:1980,death:null,gender:'male',relation:'child',parentId:id3,spouseId:id7,phone:'0901234567',job:'Kỹ sư',hometown:'TP.HCM',anniversary:'',note:'',avatar:''},
+    {id:id7,name:'Phạm Thị Hoa',birth:1983,death:null,gender:'female',relation:'spouse',parentId:null,spouseId:id6,phone:'0956789012',job:'Kinh doanh',hometown:'Đà Nẵng',anniversary:'',note:'',avatar:''},
+    {id:id8,name:'Nguyễn Thị Trang',birth:1982,death:null,gender:'female',relation:'child',parentId:id3,spouseId:null,phone:'0978901234',job:'Giáo viên',hometown:'Hà Nội',anniversary:'',note:'',avatar:''},
+  ];
+  db.events=[
+    {id:uid(),name:'Giỗ Cụ Tổ',type:'anniversary',date:'2026-08-09',recurring:'yes',lunar:'15/7 Âm lịch',memberId:id1,note:'Tổ chức tại nhà thờ họ'},
+    {id:uid(),name:'Họp họ hàng năm',type:'gathering',date:'2026-07-01',recurring:'yes',lunar:'',memberId:'',note:'Mùng 1 tháng 6'},
+  ];
+  saveDB();
+}
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+
+// ==================== TABS ====================
+function switchTab(name, el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  prevTab = name;
+  const fab = document.getElementById('fab-btn');
+  if(name==='events') { fab.style.display='flex'; fab.title='Thêm sự kiện'; fab.onclick=openAddEvent; }
+  else if(name==='tree'||name==='members') { fab.style.display='flex'; fab.title='Thêm thành viên'; fab.onclick=openAddMember; }
+  else fab.style.display='none';
+  if(name==='tree') renderTree();
+  if(name==='events') renderCalendar();
+  if(name==='members') renderMemberList();
+  updateStats();
+}
+
+function goBack(){
+  switchTab(prevTab, document.querySelector('.nav-item.active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+prevTab).classList.add('active');
+  const navIdx={'tree':0,'events':1,'members':2,'community':3,'account':4};
+  if(prevTab in navIdx) document.querySelectorAll('.nav-item')[navIdx[prevTab]].classList.add('active');
+}
+
+// ==================== STATS ====================
+function updateStats(){
+  document.getElementById('stat-members').textContent=db.members.length;
+  const gens = computeGenerations();
+  document.getElementById('stat-gen').textContent=gens;
+  document.getElementById('stat-events').textContent=db.events.length;
+}
+
+function computeGenerations(){
+  if(!db.members.length) return 0;
+  function depth(id, visited=new Set()){
+    if(visited.has(id)) return 0;
+    visited.add(id);
+    const children = db.members.filter(m=>m.parentId===id);
+    if(!children.length) return 1;
+    return 1+Math.max(...children.map(c=>depth(c.id,visited)));
+  }
+  const roots = db.members.filter(m=>!m.parentId || m.relation==='root');
+  if(!roots.length) return 1;
+  return Math.max(...roots.map(r=>depth(r.id)));
+}
+
+// ==================== TREE ====================
+function renderTree(){
+  const container = document.getElementById('tree-root');
+  if(!db.members.length){ container.innerHTML='<div class="empty-state"><div class="empty-icon">🌱</div><div class="empty-text">Chưa có thành viên nào<br>Nhấn [+ Thêm thành viên] để bắt đầu</div></div>'; return; }
+  container.innerHTML = '';
+  const roots = db.members.filter(m=> !m.parentId || m.relation==='root').filter(m=>m.gender==='male'||!m.spouseId);
+  if(!roots.length){ container.innerHTML='<p style="text-align:center;color:var(--text3);padding:20px">Đang xây dựng cây...</p>'; return; }
+  const wrap = document.createElement('div');
+  wrap.style.cssText='display:flex;flex-direction:column;align-items:center;';
+  roots.forEach(root=>{
+    buildSubTree(wrap, root, 0);
+  });
+  container.appendChild(wrap);
+}
+
+function buildSubTree(container, member, gen){
+  const spouse = member.spouseId ? db.members.find(m=>m.id===member.spouseId) : null;
+  const children = db.members.filter(m=>m.parentId===member.id);
+
+  const genDiv = document.createElement('div');
+  genDiv.style.cssText='display:flex;flex-direction:column;align-items:center;';
+
+  // Couple row
+  const coupleDiv = document.createElement('div');
+  coupleDiv.style.cssText='display:flex;align-items:flex-end;gap:4px;';
+  coupleDiv.appendChild(createMemberCard(member));
+  if(spouse){
+    const line = document.createElement('div');
+    line.className='couple-line';
+    coupleDiv.appendChild(line);
+    coupleDiv.appendChild(createMemberCard(spouse));
+  }
+  genDiv.appendChild(coupleDiv);
+
+  if(children.length){
+    const vLine = document.createElement('div');
+    vLine.className='v-line';
+    genDiv.appendChild(vLine);
+
+    const childrenRow = document.createElement('div');
+    childrenRow.style.cssText='display:flex;gap:16px;justify-content:center;';
+    children.forEach(child=>{
+      if(child.relation==='spouse') return;
+      const childCol = document.createElement('div');
+      childCol.style.cssText='display:flex;flex-direction:column;align-items:center;';
+      const cv = document.createElement('div');
+      cv.className='child-v-line';
+      childCol.appendChild(cv);
+      buildSubTree(childCol, child, gen+1);
+      childrenRow.appendChild(childCol);
+    });
+
+    if(children.filter(c=>c.relation!=='spouse').length>1){
+      const hWrap = document.createElement('div');
+      hWrap.style.cssText='display:flex;justify-content:center;';
+      const hLine = document.createElement('div');
+      const childrenFiltered = children.filter(c=>c.relation!=='spouse');
+      hLine.style.cssText=`height:2px;background:var(--border);width:${Math.max(0,(childrenFiltered.length-1))*106}px;`;
+      hWrap.appendChild(hLine);
+      genDiv.appendChild(hWrap);
+    }
+    genDiv.appendChild(childrenRow);
+  }
+
+  container.appendChild(genDiv);
+}
+
+function createMemberCard(member){
+  const card = document.createElement('div');
+  card.className='member-card'+(member.death?' deceased':'')+((!member.parentId||member.relation==='root')&&member.gender==='male'?' root':'');
+  card.onclick=()=>showDetail(member.id);
+
+  const ava = document.createElement('div');
+  ava.className='member-avatar';
+  if(member.avatar){ const img=document.createElement('img'); img.src=member.avatar; ava.appendChild(img); }
+  else{ ava.textContent=member.gender==='female'?'👩':'👨'; }
+  card.appendChild(ava);
+
+  const name = document.createElement('div');
+  name.className='member-name';
+  name.textContent=member.name;
+  card.appendChild(name);
+
+  const year = document.createElement('div');
+  year.className='member-year';
+  year.textContent=member.birth?(member.death?`${member.birth}–${member.death}`:`${member.birth}`):'';
+  card.appendChild(year);
+
+  if(member.relation){
+    const relMap={'root':'Tổ','spouse':'Vợ/Chồng','child':'Con','parent':'Cha/Mẹ','sibling':'Anh/Chị/Em'};
+    const rel = document.createElement('div');
+    rel.className='member-rel';
+    rel.textContent=relMap[member.relation]||member.relation;
+    card.appendChild(rel);
+  }
+  return card;
+}
+
+// ==================== MEMBER LIST ====================
+function renderMemberList(){
+  const q=(document.getElementById('member-search')||{}).value||'';
+  const list=document.getElementById('member-list');
+  const filtered=db.members.filter(m=>m.name.toLowerCase().includes(q.toLowerCase()));
+  if(!filtered.length){ list.innerHTML='<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">Không tìm thấy thành viên</div></div>'; return; }
+  list.innerHTML=filtered.map(m=>`
+    <div class="member-list-item" onclick="showDetail('${m.id}')">
+      <div class="member-list-avatar">${m.avatar?`<img src="${m.avatar}">`:(m.gender==='female'?'👩':'👨')}</div>
+      <div class="member-list-info">
+        <div class="member-list-name">${m.name}${m.death?'<span class="deceased-tag">Đã mất</span>':''}</div>
+        <div class="member-list-detail">${m.birth?`Sinh: ${m.birth}`:''} ${m.job?'· '+m.job:''} ${m.hometown?'· '+m.hometown:''}</div>
+        ${m.phone?`<div class="member-list-phone">📞 <a href="tel:${m.phone}" class="phone-link">${m.phone}</a></div>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== DETAIL ====================
+function showDetail(id){
+  const m=db.members.find(x=>x.id===id);
+  if(!m) return;
+  prevTab=document.querySelector('.tab-panel.active').id.replace('tab-','');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-detail').classList.add('active');
+  document.getElementById('fab-btn').style.display='none';
+
+  const relMap={'root':'Tổ tiên','spouse':'Vợ/Chồng','child':'Con','parent':'Cha/Mẹ','sibling':'Anh/Chị/Em'};
+  const parent=m.parentId?db.members.find(x=>x.id===m.parentId):null;
+  const spouse=m.spouseId?db.members.find(x=>x.id===m.spouseId):null;
+  const children=db.members.filter(x=>x.parentId===m.id&&x.relation!=='spouse');
+  const sibCount=parent?db.members.filter(x=>x.parentId===parent.id&&x.id!==m.id&&x.relation!=='spouse').length:0;
+
+  document.getElementById('detail-content').innerHTML=`
+    <div class="detail-header">
+      <div class="detail-avatar">${m.avatar?`<img src="${m.avatar}">`:(m.gender==='female'?'👩':'👨')}</div>
+      <div class="detail-name">${m.name}${m.death?'<span style="font-size:13px;opacity:0.8;margin-left:6px">(†${m.death})</span>':''}</div>
+      <div class="detail-rel">${relMap[m.relation]||''}</div>
+    </div>
+    <div class="info-card">
+      ${row('🎂 Năm sinh',m.birth||'–')}
+      ${m.death?row('✝️ Năm mất',m.death):''}
+      ${m.anniversary?row('🕯️ Ngày giỗ',m.anniversary):''}
+      ${row('⚧ Giới tính',m.gender==='male'?'Nam':'Nữ')}
+      ${m.phone?`<div class="info-row"><span class="info-key">📞 Điện thoại</span><a href="tel:${m.phone}" class="phone-link">${m.phone}</a></div>`:''}
+      ${m.job?row('💼 Nghề nghiệp',m.job):''}
+      ${m.hometown?row('📍 Quê quán',m.hometown):''}
+    </div>
+    <div class="info-card">
+      ${parent?row('👨‍👩 Con của',parent.name):''}
+      ${spouse?row(m.gender==='male'?'👰 Vợ':'🤵 Chồng',spouse.name):''}
+      ${children.length?row('👶 Con cái',children.map(c=>c.name).join(', ')):''}
+      ${sibCount?row('👫 Anh/chị/em',sibCount+' người'):''}
+    </div>
+    ${m.note?`<div class="info-card"><div class="info-key" style="margin-bottom:8px">📝 Ghi chú</div><p style="font-size:14px;color:var(--text);line-height:1.6">${m.note}</p></div>`:''}
+    <button class="btn-primary" onclick="editMember('${m.id}')">✏️ Chỉnh sửa</button>
+    <button class="btn-danger" onclick="deleteMember('${m.id}')">🗑️ Xoá thành viên này</button>
+  `;
+}
+
+function row(k,v){ return `<div class="info-row"><span class="info-key">${k}</span><span class="info-val">${v}</span></div>`; }
+
+function editMember(id){
+  const m=db.members.find(x=>x.id===id);
+  if(!m) return;
+  editingMemberId=id;
+  openAddMember();
+  setTimeout(()=>{
+    document.getElementById('m-name').value=m.name||'';
+    document.getElementById('m-birth').value=m.birth||'';
+    document.getElementById('m-death').value=m.death||'';
+    document.getElementById('m-gender').value=m.gender||'male';
+    document.getElementById('m-phone').value=m.phone||'';
+    document.getElementById('m-relation').value=m.relation||'root';
+    document.getElementById('m-job').value=m.job||'';
+    document.getElementById('m-hometown').value=m.hometown||'';
+    document.getElementById('m-anniversary').value=m.anniversary||'';
+    document.getElementById('m-note').value=m.note||'';
+    if(m.avatar){ const p=document.getElementById('avatar-preview'); p.innerHTML=`<img src="${m.avatar}">`; selectedMemberAvatar=m.avatar; }
+    document.querySelector('#modal-member .modal-title').textContent='✏️ Chỉnh sửa Thành Viên';
+  },100);
+}
+
+function deleteMember(id){
+  if(!confirm('Xoá thành viên này?')) return;
+  db.members=db.members.filter(m=>m.id!==id);
+  db.members.forEach(m=>{ if(m.spouseId===id) m.spouseId=null; if(m.parentId===id) m.parentId=null; });
+  saveDB(); notify('Đã xoá thành viên'); goBack();
+}
+
+// ==================== ADD MEMBER ====================
+function openAddMember(){
+  editingMemberId=null;
+  selectedMemberAvatar='';
+  document.getElementById('avatar-preview').innerHTML='👤';
+  ['m-name','m-birth','m-death','m-phone','m-job','m-hometown','m-anniversary','m-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-gender').value='male';
+  document.getElementById('m-relation').value='root';
+  document.querySelector('#modal-member .modal-title').textContent='➕ Thêm Thành Viên';
+
+  const parentSel=document.getElementById('m-parent');
+  parentSel.innerHTML='<option value="">– Không chọn –</option>'+db.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+
+  document.getElementById('modal-member').classList.add('open');
+}
+
+function previewAvatar(input){
+  if(!input.files[0]) return;
+  const r=new FileReader();
+  r.onload=e=>{ selectedMemberAvatar=e.target.result; document.getElementById('avatar-preview').innerHTML=`<img src="${e.target.result}">`; };
+  r.readAsDataURL(input.files[0]);
+}
+
+function saveMember(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){ alert('Vui lòng nhập họ tên!'); return; }
+  const data={
+    id: editingMemberId||uid(),
+    name,
+    birth: parseInt(document.getElementById('m-birth').value)||null,
+    death: parseInt(document.getElementById('m-death').value)||null,
+    gender: document.getElementById('m-gender').value,
+    relation: document.getElementById('m-relation').value,
+    parentId: document.getElementById('m-parent').value||null,
+    spouseId: null,
+    phone: document.getElementById('m-phone').value.trim(),
+    job: document.getElementById('m-job').value.trim(),
+    hometown: document.getElementById('m-hometown').value.trim(),
+    anniversary: document.getElementById('m-anniversary').value.trim(),
+    note: document.getElementById('m-note').value.trim(),
+    avatar: selectedMemberAvatar,
+  };
+
+  if(data.relation==='spouse'&&data.parentId){
+    const target=db.members.find(m=>m.id===data.parentId);
+    if(target){ target.spouseId=data.id; data.spouseId=target.id; data.parentId=null; }
+  }
+
+  if(editingMemberId){ const idx=db.members.findIndex(m=>m.id===editingMemberId); db.members[idx]=data; }
+  else db.members.push(data);
+
+  saveDB(); closeModal('modal-member'); notify('✅ Đã lưu thành viên: '+name);
+  renderTree(); renderMemberList(); updateStats();
+  if(editingMemberId) showDetail(data.id);
+}
+
+// ==================== EVENTS ====================
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
+
+function renderCalendar(){
+  updateTime();
+  const now=new Date();
+  const label=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  document.getElementById('cal-month-label').textContent=`${label[calMonth]} / ${calYear}`;
+
+  const grid=document.getElementById('cal-grid');
+  const days=['CN','T2','T3','T4','T5','T6','T7'];
+  let html=days.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
+
+  const first=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const prevDays=new Date(calYear,calMonth,0).getDate();
+
+  for(let i=0;i<first;i++) html+=`<div class="cal-day other-month">${prevDays-first+1+i}</div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday=d===now.getDate()&&calMonth===now.getMonth()&&calYear===now.getFullYear();
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hasEv=db.events.some(e=>eventOccursOnDate(e,dateStr));
+    html+=`<div class="cal-day${isToday?' today':''}${hasEv?' has-event':''}" onclick="selectDay('${dateStr}')">${d}</div>`;
+  }
+  const remaining=(7-((first+daysInMonth)%7))%7;
+  for(let i=1;i<=remaining;i++) html+=`<div class="cal-day other-month">${i}</div>`;
+  grid.innerHTML=html;
+
+  renderEventLists();
+}
+
+function eventOccursOnDate(ev, dateStr){
+  if(ev.recurring==='yes'){
+    const evDate=new Date(ev.date);
+    const checkDate=new Date(dateStr);
+    return evDate.getMonth()===checkDate.getMonth()&&evDate.getDate()===checkDate.getDate();
+  }
+  return ev.date===dateStr;
+}
+
+function renderEventLists(){
+  const now=new Date();
+  const todayStr=now.toISOString().slice(0,10);
+  const todayEvents=db.events.filter(e=>eventOccursOnDate(e,todayStr));
+  const typeLabel={anniversary:'Ngày giỗ',birthday:'Sinh nhật',wedding:'Cưới hỏi',gathering:'Họp họ',other:'Khác'};
+
+  const todayDiv=document.getElementById('events-today');
+  if(!todayEvents.length) todayDiv.innerHTML='<p style="color:var(--text3);font-size:13px;padding:10px 0">Không có sự kiện nào diễn ra hôm nay</p>';
+  else todayDiv.innerHTML=todayEvents.map(e=>eventCard(e,typeLabel)).join('');
+
+  const upcoming=[];
+  for(let i=1;i<=30;i++){
+    const d=new Date(now); d.setDate(d.getDate()+i);
+    const ds=d.toISOString().slice(0,10);
+    db.events.forEach(e=>{ if(eventOccursOnDate(e,ds)) upcoming.push({ev:e,date:ds}); });
+  }
+  const upDiv=document.getElementById('events-upcoming');
+  if(!upcoming.length) upDiv.innerHTML='<p style="color:var(--text3);font-size:13px;padding:10px 0">Không có sự kiện nào trong 30 ngày tới</p>';
+  else upDiv.innerHTML=upcoming.map(({ev,date})=>eventCard(ev,typeLabel,date)).join('');
+}
+
+function eventCard(e,typeLabel,dateOverride){
+  const d=new Date(dateOverride||e.date);
+  const member=e.memberId?db.members.find(m=>m.id===e.memberId):null;
+  return `<div class="event-card">
+    <div class="event-date">${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}${e.lunar?' · '+e.lunar:''} ${dateOverride?'<span class="upcoming-badge">Sắp tới</span>':''}</div>
+    <div class="event-name">${e.name}${member?' – '+member.name:''}</div>
+    <div><span class="event-type">${typeLabel[e.type]||e.type}</span></div>
+    ${e.note?`<div style="font-size:12px;color:var(--text3);margin-top:6px">${e.note}</div>`:''}
+  </div>`;
+}
+
+function selectDay(dateStr){
+  const evs=db.events.filter(e=>eventOccursOnDate(e,dateStr));
+  if(evs.length){ const typeLabel={anniversary:'Ngày giỗ',birthday:'Sinh nhật',wedding:'Cưới hỏi',gathering:'Họp họ',other:'Khác'}; alert('Sự kiện ngày '+dateStr+':\n'+evs.map(e=>`• ${e.name} (${typeLabel[e.type]||e.type})`).join('\n')); }
+}
+
+function prevMonth(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function nextMonth(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function openAddEvent(){
+  const memberSel=document.getElementById('e-member');
+  memberSel.innerHTML='<option value="">– Không chọn –</option>'+db.members.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+  document.getElementById('modal-event').classList.add('open');
+}
+
+function saveEvent(){
+  const name=document.getElementById('e-name').value.trim();
+  if(!name){ alert('Vui lòng nhập tên sự kiện!'); return; }
+  db.events.push({
+    id:uid(), name,
+    type:document.getElementById('e-type').value,
+    date:document.getElementById('e-date').value||new Date().toISOString().slice(0,10),
+    recurring:document.getElementById('e-recurring').value,
+    lunar:document.getElementById('e-lunar').value.trim(),
+    memberId:document.getElementById('e-member').value,
+    note:document.getElementById('e-note').value.trim(),
+  });
+  saveDB(); closeModal('modal-event'); notify('✅ Đã thêm sự kiện'); renderCalendar(); updateStats();
+}
+
+// ==================== UTILS ====================
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function notify(msg){ const n=document.getElementById('notif'); n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2500); }
+function clearAll(){ if(confirm('Xoá toàn bộ dữ liệu?')){ db={members:[],events:[]}; saveDB(); location.reload(); } }
+
+function updateTime(){
+  const now=new Date();
+  const h=String(now.getHours()).padStart(2,'0'), m=String(now.getMinutes()).padStart(2,'0');
+  const el=document.getElementById('cur-time'); if(el) el.textContent=h+':'+m;
+  const days=['Chủ Nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+  const dateEl=document.getElementById('cur-date-vi');
+  if(dateEl) dateEl.textContent=`${days[now.getDay()]}, ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+}
+
+setInterval(updateTime,30000);
+
+// ==================== INIT ====================
+document.getElementById('modal-member').addEventListener('click',function(e){ if(e.target===this) closeModal('modal-member'); });
+document.getElementById('modal-event').addEventListener('click',function(e){ if(e.target===this) closeModal('modal-event'); });
+document.getElementById('m-relation').addEventListener('change',function(){ document.getElementById('m-parent-group').style.display=this.value==='child'||this.value==='spouse'?'block':'none'; });
+document.getElementById('m-parent-group').style.display='none';
+
+renderTree();
+updateStats();
+</script>
+</body>
+</html>
